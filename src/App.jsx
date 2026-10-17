@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowDown, ArrowRight, ArrowLeft, ArrowUp, Plus, Minus, Cpu, MoveUpRight, RotateCcw, Layers3, MousePointer2, ChevronDown, Check, Menu, X, Play, HardDrive, Zap, ScanLine } from 'lucide-react';
 import SSDScene from './components/SSDScene.jsx';
+import FactGraphic from './components/FactGraphic.jsx';
 import { parts, facts } from './data.js';
 
 const navigation = [
@@ -231,15 +232,6 @@ function DataJourney() {
     <div className="journey-timeline">{steps.map((s, i) => <div key={i} className={`journey-stage ${step === i ? 'active' : ''}`} aria-current={step === i ? 'step' : undefined}><span>0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></div>)}</div>
     <p className="simulation-note">Сызба процесті түсіндіру үшін жеңілдетілген. Нақты SSD бірнеше NAND арнасымен қатар жұмыс істейді; қадамдардың реті мен ұзақтығы контроллерге байланысты.</p>
   </section>;
-}
-
-function FactGraphic({ selected }) {
-  if (selected === 0) return <div className="fact-graphic charge-graphic"><div className="charge-grid">{Array.from({ length: 16 }, (_, i) => <span key={i} style={{ '--i': i, '--opacity': 0.12 + i * 0.055 }}>{i.toString(2).padStart(4, '0')}</span>)}</div><span className="graphic-caption">QLC / 16 КЕРНЕУ КҮЙІ / 4 БИТ</span></div>;
-  if (selected === 1) return <div className="fact-graphic blocks-graphic">{Array.from({ length: 4 }, (_, i) => <div key={i} className="nand-block">{Array.from({ length: 12 }, (_, j) => <span key={j} className={(i + j) % 3 ? 'filled' : ''} />)}</div>)}<span className="graphic-caption">БЕТПЕН ЖАЗУ → БЛОКПЕН ӨШІРУ</span></div>;
-  if (selected === 2) return <div className="fact-graphic endurance-graphic"><svg viewBox="0 0 230 160"><path d="M25 135a90 90 0 1 1 180 0" fill="none" stroke="#deded7" strokeWidth="17" /><path d="M25 135a90 90 0 1 1 180 0" fill="none" stroke="#ff5a24" strokeWidth="17" strokeDasharray="180 300" /><path d="M115 128l48-54" stroke="#20211f" strokeWidth="4" strokeLinecap="round" /><circle cx="115" cy="128" r="9" fill="#20211f" /></svg><span className="graphic-caption">РЕСУРС ≠ ЖАРАМДЫЛЫҚ МЕРЗІМІ</span></div>;
-  if (selected === 3) return <div className="fact-graphic trim-graphic">{Array.from({ length: 15 }, (_, i) => <span key={i} className={i % 4 === 0 ? 'trimmed' : ''} style={{ '--i': i }}>{i % 4 === 0 ? <Check size={18} /> : '01'}</span>)}<span className="graphic-caption">ҚАЖЕТСІЗ ДЕРЕК → БОС ОРЫН ТУРАЛЫ БЕЛГІ</span></div>;
-  if (selected === 4) return <div className="fact-graphic cache-graphic"><div className="cache-chart"><div className="cache-high" /><div className="cache-low" /><span className="chart-label-fast">SLC КЭШ</span><span className="chart-label-slow">TLC / QLC</span></div><span className="graphic-caption">КЭШ ТОЛҒАНДА ЖЫЛДАМДЫҚ ӨЗГЕРУІ МҮМКІН</span></div>;
-  return <div className="fact-graphic capacity-graphic"><span>1<span className="capacity-unit">ТБ</span></span><ArrowDown size={27} /><strong>931<span className="capacity-unit">GiB</span></strong><span className="graphic-caption">БІРДЕЙ БАЙТТАР. ӘРТҮРЛІ БІРЛІКТЕР.</span></div>;
 }
 
 function Facts() {

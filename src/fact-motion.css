@@ -1,0 +1,169 @@
+/* Each diagram explains its own process without moving its frame or labels. */
+.fact-graphic .charge-grid > span {
+  animation: factChargeGlow 6.4s ease-in-out calc(var(--i, 0) * -.18s) infinite;
+}
+@keyframes factChargeGlow {
+  0%, 12%, 70%, 100% { box-shadow: 0 3px 0 #b9905c, inset 0 0 0 1px transparent; }
+  30%, 45% { box-shadow: 0 3px 0 #b9905c, 0 0 0 3px #ff5a2415, inset 0 0 0 1px #ff5a2480; }
+}
+
+/* A page fills one row at a time; every row in a block erases together. */
+.fact-graphic .nand-block > span {
+  animation: factNandRow0 8s ease-in-out calc(var(--block, 0) * -.65s) infinite both;
+}
+.fact-graphic .nand-block > .nand-row-1 { animation-name: factNandRow1; }
+.fact-graphic .nand-block > .nand-row-2 { animation-name: factNandRow2; }
+.fact-graphic .nand-block > .nand-row-3 { animation-name: factNandRow3; }
+@keyframes factNandRow0 {
+  0%, 3%, 87%, 100% { background-color: #c4d6b5; }
+  12%, 75% { background-color: #ff5a24; }
+}
+@keyframes factNandRow1 {
+  0%, 17%, 87%, 100% { background-color: #c4d6b5; }
+  26%, 75% { background-color: #ff5a24; }
+}
+@keyframes factNandRow2 {
+  0%, 31%, 87%, 100% { background-color: #c4d6b5; }
+  40%, 75% { background-color: #ff5a24; }
+}
+@keyframes factNandRow3 {
+  0%, 45%, 87%, 100% { background-color: #c4d6b5; }
+  54%, 75% { background-color: #ff5a24; }
+}
+
+/* The hand and arc travel together, hold briefly, then return. */
+.fact-graphic .endurance-needle {
+  transform-box: view-box;
+  transform-origin: 115px 128px;
+  transform: rotate(42deg);
+  animation: factGaugeNeedle 8s ease-in-out infinite;
+}
+.fact-graphic .endurance-progress {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 25;
+  animation: factGaugeProgress 8s ease-in-out infinite;
+}
+@keyframes factGaugeNeedle {
+  0%, 8%, 94%, 100% { transform: rotate(-78deg); }
+  47%, 58% { transform: rotate(78deg); }
+}
+@keyframes factGaugeProgress {
+  0%, 8%, 94%, 100% { stroke-dashoffset: 94; }
+  47%, 58% { stroke-dashoffset: 6; }
+}
+
+/* TRIM marks unwanted data; only the marked cells change. */
+.fact-graphic.trim-graphic > span.trimmed {
+  animation: factTrimCell 7s ease-in-out calc(var(--i, 0) * -.09s) infinite;
+}
+.fact-graphic .trimmed > .trim-data,
+.fact-graphic .trimmed > .trim-check {
+  display: grid;
+  place-items: center;
+  grid-area: 1 / 1;
+}
+.fact-graphic .trimmed > .trim-data {
+  opacity: 0;
+  animation: factTrimData 7s ease-in-out calc(var(--i, 0) * -.09s) infinite;
+}
+.fact-graphic .trimmed > .trim-check {
+  opacity: 1;
+  animation: factTrimCheck 7s ease-in-out calc(var(--i, 0) * -.09s) infinite;
+}
+@keyframes factTrimCell {
+  0%, 12%, 92%, 100% { background-color: #dce7d2; border-color: #bfd3aa; }
+  30%, 76% { background-color: #ff5a2410; border-color: #ff5a2480; }
+}
+@keyframes factTrimData {
+  0%, 12%, 92%, 100% { opacity: 1; }
+  30%, 76% { opacity: 0; }
+}
+@keyframes factTrimCheck {
+  0%, 12%, 92%, 100% { opacity: 0; }
+  30%, 76% { opacity: 1; }
+}
+@media (max-width: 480px) {
+  .fact-graphic.trim-graphic {
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* One write travels through the fast cache, then the native NAND speed. */
+.fact-graphic .cache-high { height: 76%; }
+.fact-graphic .cache-low { height: 28%; }
+.fact-graphic .cache-trace {
+  position: absolute;
+  top: 0;
+  left: 13px;
+  width: calc(100% - 26px);
+  height: calc(100% - 1px);
+  overflow: visible;
+  pointer-events: none;
+}
+.fact-graphic .cache-trace > path {
+  fill: none;
+  stroke: #667d51;
+  stroke-width: 1;
+  stroke-opacity: .3;
+  vector-effect: non-scaling-stroke;
+}
+.fact-graphic .cache-packet {
+  cx: 80px;
+  cy: 72px;
+  fill: #ff5a24;
+  stroke: #f5f7f0;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  animation: factCachePacket 7.2s linear infinite;
+}
+@keyframes factCachePacket {
+  0%, 8% { cx: 0; cy: 24px; opacity: 0; }
+  12% { cx: 0; cy: 24px; opacity: 1; }
+  40% { cx: 43px; cy: 24px; opacity: 1; }
+  56% { cx: 43px; cy: 72px; opacity: 1; }
+  88% { cx: 100px; cy: 72px; opacity: 1; }
+  94% { cx: 100px; cy: 72px; opacity: 0; }
+  100% { cx: 0; cy: 24px; opacity: 0; }
+}
+
+/* The units convert; the number of bytes stays the same. */
+.fact-graphic .capacity-source { animation: factCapacitySource 6s ease-in-out infinite; }
+.fact-graphic .capacity-arrow { animation: factCapacityFlow 6s ease-in-out infinite; }
+.fact-graphic .capacity-result { animation: factCapacityResult 6s ease-in-out infinite; }
+@keyframes factCapacitySource {
+  0%, 10%, 65%, 100% { color: #22231f; }
+  26%, 40% { color: #a73a14; }
+}
+@keyframes factCapacityFlow {
+  0%, 14%, 80%, 100% { transform: translateY(-2px); opacity: .65; }
+  35%, 62% { transform: translateY(3px); opacity: 1; }
+}
+@keyframes factCapacityResult {
+  0%, 35%, 90%, 100% { text-shadow: 0 0 0 transparent; }
+  53%, 72% { text-shadow: 0 0 14px #ff5a2440; }
+}
+
+/* Hidden diagrams keep their place in the cycle and consume no animation work. */
+.fact-graphic,
+.fact-graphic *,
+.fact-graphic::before,
+.fact-graphic::after,
+.fact-graphic *::before,
+.fact-graphic *::after { animation-play-state: paused !important; }
+.fact-graphic[data-motion="running"],
+.fact-graphic[data-motion="running"] *,
+.fact-graphic[data-motion="running"]::before,
+.fact-graphic[data-motion="running"]::after,
+.fact-graphic[data-motion="running"] *::before,
+.fact-graphic[data-motion="running"] *::after { animation-play-state: running !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fact-graphic,
+  .fact-graphic *,
+  .fact-graphic::before,
+  .fact-graphic::after,
+  .fact-graphic *::before,
+  .fact-graphic *::after { animation: none !important; }
+}
