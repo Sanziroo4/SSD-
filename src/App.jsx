@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowDown, ArrowRight, ArrowLeft, ArrowUp, Plus, Minus, Cpu, MoveUpRight, RotateCcw, Layers3, MousePointer2, ChevronDown, Check, Menu, X, Play, Pause, HardDrive, CircuitBoard, Zap, ScanLine, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, ArrowDown, ArrowRight, ArrowLeft, ArrowUp, Plus, Minus, Cpu, MoveUpRight, RotateCcw, Layers3, MousePointer2, ChevronDown, Check, Menu, X, Play, HardDrive, Zap, ScanLine } from 'lucide-react';
 import SSDScene from './components/SSDScene.jsx';
 import { parts, facts } from './data.js';
 
 const navigation = [
-  { id: 'intro', label: 'Танысу' },
+  { id: 'intro', label: 'Басты бет' },
+  { id: 'basics', label: 'SSD деген не?' },
   { id: 'anatomy', label: 'Құрылымы' },
   { id: 'how', label: 'Жұмыс принципі' },
-  { id: 'facts', label: 'Қызық фактілер' },
+  { id: 'facts', label: 'Фактілер' },
+  { id: 'questions', label: 'Сұрақ-жауап' },
 ];
 
 function useScrollEffects() {
@@ -58,7 +60,6 @@ function Header({ active }) {
       <nav className={open ? 'main-nav nav-open' : 'main-nav'} aria-label="Негізгі мәзір">
         {navigation.map(item => <a key={item.id} href={`#${item.id}`} onClick={() => setOpen(false)} className={active === item.id ? 'active' : ''}>{item.label}</a>)}
       </nav>
-      <a className="header-action" href="#anatomy"><span className="live-dot" />3D зертхана<ArrowUpRight size={16} /></a>
       <button className="mobile-toggle icon-button" onClick={() => setOpen(!open)} aria-label={open ? 'Мәзірді жабу' : 'Мәзірді ашу'} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
     </div>
     <div className="reading-progress" />
@@ -76,8 +77,7 @@ function Hero() {
       <div className="hero-copy">
         <div className="hero-kicker"><span />SOLID STATE DRIVE</div>
         <h1>Кішкентай чип.<br />Үлкен <span className="orange-text">мүмкіндік<svg viewBox="0 0 450 18" aria-hidden="true"><path d="M4 12Q210 -3 446 9" /></svg></span><span className="title-period">.</span></h1>
-        <p className="hero-description">Жылдамдықтың сыры — көлемде емес.<br />Миллиардтаған деректі үнсіз сақтайтын SSD-нің<br className="desktop-break" /> таңғаларлық әлеміне еніңіз.</p>
-        <div className="hero-actions"><a className="button button-orange" href="#anatomy">Ішіне үңілу<ArrowUpRight size={21} /></a><a className="text-button" href="#basics"><span className="circle-play"><ArrowDown size={16} /></span>SSD деген не?</a></div>
+        <p className="hero-description">Жылдамдықтың сыры — көлемде емес. Миллиардтаған деректі үнсіз сақтайтын SSD-нің таңғаларлық әлеміне еніңіз.</p>
         <div className="hero-note"><span className="note-line" /><span>Қозғалатын бөлшек жоқ.<br /><b>Тек таза технология.</b></span></div>
       </div>
       <div className="hero-art" aria-label="Кеңістікте қалықтап тұрған SSD-нің үш өлшемді моделі">
@@ -94,7 +94,7 @@ function Hero() {
         <div className="float-label"><MousePointer2 size={12} />Модельді бұрып көріңіз</div>
       </div>
     </div>
-    <div className="hero-bottom"><a href="#basics" className="scroll-cue"><span className="scroll-cue-box"><ArrowDown size={15} /></span>ТӨМЕН ЖЫЛЖЫТЫҢЫЗ<span className="scroll-cue-line" /></a><span className="hero-bottom-right">АЗ ҚОЗҒАЛЫС. КӨП МҮМКІНДІК.<span>001 — 006</span></span></div>
+    <div className="hero-bottom" aria-hidden="true"><div className="scroll-cue"><span className="scroll-cue-box"><ArrowDown size={15} /></span>ТӨМЕН ЖЫЛЖЫТЫҢЫЗ<span className="scroll-cue-line" /></div><span className="hero-bottom-right">АЗ ҚОЗҒАЛЫС. КӨП МҮМКІНДІК.<span>001 — 006</span></span></div>
     <div className="hero-metrics">
       <div><span className="metric-index">01 /</span><strong>0<span>бөлшек</span></strong><p>Механикалық қозғалыс. Діріл. Күту.</p></div>
       <div><span className="metric-index">02 /</span><strong>7 000<span>МБ/с дейін*</span></strong><p>Файлдарыңызға жаңа қарқын.</p></div>
@@ -112,7 +112,6 @@ function Basics() {
       <h2>Сиқыр емес.<br />Таза <span className="muted-heading">инженерия.</span></h2>
       <p className="section-lead">SSD — деректерді микрочиптерде сақтайтын жинақтауыш. Ішінде айналатын диск те, қозғалатын оқу басы да жоқ.</p>
       <p className="body-copy">Фотосуреттер, ойындар, операциялық жүйе — бәрі NAND жадындағы электрлік күйлерге айналады. Қуат өшсе де, олар орнында қалады. Ал контроллер керек деректі мыңдаған ұяшықтың арасынан тауып береді.</p>
-      <a href="#how" className="underlined-link">Бір биттің саяхатын көру<ArrowUpRight size={18} /></a>
     </div>
     <div className="comparison-card" data-reveal="right">
       <div className="comparison-top"><span className="micro-label">ЭВОЛЮЦИЯ / САҚТАУ ТЕХНОЛОГИЯСЫ</span><div className="segmented-control" aria-label="Жинақтауыш түрі"><button className={drive === 'hdd' ? 'selected' : ''} onClick={() => setDrive('hdd')}>HDD</button><button className={drive === 'ssd' ? 'selected' : ''} onClick={() => setDrive('ssd')}>SSD</button></div></div>
@@ -146,7 +145,7 @@ function Anatomy() {
           <span className="lab-dimension">22 MM <span />80 MM</span>
           <div className="lab-floating-badge"><Layers3 size={13} />{exploded ? 'Әр бөлшектің өз рөлі бар' : 'Көрінгеннен де күрделірек'}</div>
         </div>
-        <div className="lab-controls"><div className="lab-step"><span>{exploded ? '02' : '01'}</span> / 02<span className="lab-step-name">{exploded ? 'Бөлшектер әлемі' : 'Біртұтас құрылғы'}</span></div><div className="lab-buttons"><button className="lab-back" onClick={() => setExploded(false)} disabled={!exploded} aria-label="SSD-ні қайта жинау"><ArrowLeft size={19} /><span>Қайта жинау</span></button><button className="button button-orange" onClick={() => setExploded(!exploded)}>{exploded ? 'Қайта жинау' : 'Бөлшектеу'}{exploded ? <RotateCcw size={18} /> : <MoveUpRight size={19} />}</button></div></div>
+        <div className="lab-controls"><div className="lab-step"><span>{exploded ? '02' : '01'}</span> / 02<span className="lab-step-name">{exploded ? 'Бөлшектер әлемі' : 'Біртұтас құрылғы'}</span></div><div className="lab-buttons"><button className="button button-orange" onClick={() => setExploded(!exploded)}>{exploded ? 'Қайта жинау' : 'Бөлшектеу'}{exploded ? <RotateCcw size={18} /> : <MoveUpRight size={19} />}</button></div></div>
       </div>
       <div className="parts-navigation" aria-label="SSD компоненттері">{parts.map(p => <button key={p.id} onClick={() => { setExploded(true); setSelected(p.id); }} className={exploded && p.id === selected ? 'active' : ''}><span>{p.number}</span>{p.name}<Plus size={13} /></button>)}</div>
       <p className="lab-disclaimer">Түсіндіруге арналған үлгі. Компоненттердің орналасуы SSD моделіне қарай өзгереді; жеке DRAM мен жылу таратқыш барлық үлгіде болмайды.</p>
@@ -198,7 +197,7 @@ function DataJourney() {
       <div className="journey-step-description" aria-live="polite"><span className={`simulation-indicator ${running ? 'running' : ''}`}>{running ? <span className="live-dot" /> : saved ? <Check size={14} /> : <Play size={12} />}</span><div><b>{step < 0 ? 'Алғашқы файлыңызды сақтап көріңіз.' : steps[step].title}</b><p>{step < 0 ? 'Файлды таңдап, «Дерек жазу» батырмасын басыңыз. Әр кезеңді экраннан бақылай аласыз.' : steps[step].text}</p></div><span className="step-count">{step < 0 ? '00' : `0${step + 1}`}<span>/04</span></span></div>
       <div className="journey-controls"><div className="file-select"><label htmlFor="file-type">ФАЙЛ</label><select id="file-type" value={file} disabled={running} onChange={e => { setFile(e.target.value); setSaved(false); setStep(-1); }}><option>Фото.jpg</option><option>Музыка.mp3</option><option>Құжат.pdf</option></select><ChevronDown size={14} /></div><div className="journey-buttons"><button className="button button-outline" disabled={running || !saved} onClick={() => simulate('read')}><ArrowLeft size={17} />Дерек оқу</button><button className="button button-dark" disabled={running} onClick={() => simulate('write')}>{running ? <span className="button-spinner" /> : <ArrowRight size={17} />}{running ? 'Орындалуда…' : 'Дерек жазу'}</button></div></div>
     </div>
-    <div className="journey-timeline">{steps.map((s, i) => <button key={i} className={step === i ? 'active' : ''} onClick={() => { if (!running) setStep(i); }} disabled={running}><span>0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></button>)}</div>
+    <div className="journey-timeline">{steps.map((s, i) => <div key={i} className={`journey-stage ${step === i ? 'active' : ''}`} aria-current={step === i ? 'step' : undefined}><span>0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></div>)}</div>
     <p className="simulation-note">Сызба процесті түсіндіру үшін жеңілдетілген. Нақты SSD бірнеше NAND арнасымен қатар жұмыс істейді; қадамдардың реті мен ұзақтығы контроллерге байланысты.</p>
   </section>;
 }
@@ -235,7 +234,7 @@ function Questions() {
 }
 
 function Footer() {
-  return <><section className="closing section-shell" data-reveal="up"><div className="closing-top"><span className="micro-label">САЯХАТ АЯҚТАЛДЫ. ҚЫЗЫҒУШЫЛЫҚ — ЖОҚ.</span><span className="closing-symbol">↗</span></div><h2>Енді SSD —<br />жай үш әріп <span>емес.</span></h2><div className="closing-bottom"><p>Кішкентай құрылғының артында үлкен инженерия бар.<br />Оны енді сіз де білесіз.</p><a href="#anatomy" className="button button-dark">Тағы бір рет зерттеу<ArrowUpRight size={20} /></a></div></section><footer className="site-footer section-shell"><div className="footer-main"><Logo footer /><span>ТЕХНОЛОГИЯНЫ ТҮСІНУГЕ АРНАЛҒАН КЕҢІСТІК.</span><a href="#intro">Жоғарыға<ArrowUp size={15} /></a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} SSD.LAB</span><p>Білімге арналған интерактивті жоба. 3D модель мен симуляциялар — түсіндірмелік үлгілер.</p><span><span className="tiny-square" />ҚАЗАҚША ЖАСАЛҒАН</span></div></footer></>;
+  return <><section className="closing section-shell" data-reveal="up"><div className="closing-top"><span className="micro-label">САЯХАТ АЯҚТАЛДЫ. ҚЫЗЫҒУШЫЛЫҚ — ЖОҚ.</span><span className="closing-symbol">↗</span></div><h2>Енді SSD —<br />жай үш әріп <span>емес.</span></h2><div className="closing-bottom"><p>Кішкентай құрылғының артында үлкен инженерия бар.<br />Оны енді сіз де білесіз.</p></div></section><footer className="site-footer section-shell"><div className="footer-main"><Logo footer /><span>ТЕХНОЛОГИЯНЫ ТҮСІНУГЕ АРНАЛҒАН КЕҢІСТІК.</span><a href="#intro">Жоғарыға<ArrowUp size={15} /></a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} SSD.LAB</span><p>Білімге арналған интерактивті жоба. 3D модель мен симуляциялар — түсіндірмелік үлгілер.</p><span><span className="tiny-square" />ҚАЗАҚША ЖАСАЛҒАН</span></div></footer></>;
 }
 
 export default function App() {
