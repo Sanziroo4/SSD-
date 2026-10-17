@@ -18,6 +18,9 @@ function useScrollEffects() {
     const reveal = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         entry.target.dataset.visible = String(entry.isIntersecting);
+        if (entry.isIntersecting && entry.target.hasAttribute('data-reveal-once')) {
+          reveal.unobserve(entry.target);
+        }
       });
     }, { threshold: 0.12 });
     document.querySelectorAll('[data-reveal]').forEach(el => reveal.observe(el));
@@ -125,29 +128,57 @@ function Basics() {
   </section>;
 }
 
+function PartInfoCard({ activeId }) {
+  return <aside className="part-card" aria-live="polite" aria-atomic="true">
+    <div
+      className={`part-card-panel ${activeId === 'assembled' ? 'is-active' : ''}`}
+      data-part="assembled"
+      aria-hidden={activeId !== 'assembled'}
+      inert={activeId !== 'assembled' ? true : undefined}
+    >
+      <div className="part-card-top"><span className="part-number">M.2</span><ScanLine size={21} /></div>
+      <span className="part-subtitle">ЖАҚЫНЫРАҚ ТАНЫСАЙЫҚ</span>
+      <h3>Ішінде не бар?</h3>
+      <p>Құрылғыны бөлшектеу үшін төмендегі батырманы басыңыз. Кейін кез келген компонентке меңзерді апарып, оның міндетін біліңіз.</p>
+      <div className="part-card-hint"><MousePointer2 size={15} />Модельді сүйреп бұруға болады</div>
+    </div>
+    {parts.map(part => <div
+      key={part.id}
+      id={`part-card-${part.id}`}
+      className={`part-card-panel ${activeId === part.id ? 'is-active' : ''}`}
+      data-part={part.id}
+      aria-hidden={activeId !== part.id}
+      inert={activeId !== part.id ? true : undefined}
+    >
+      <div className="part-card-top"><span className="part-number">{part.number}</span><Cpu size={20} /></div>
+      <span className="part-subtitle">{part.subtitle}</span>
+      <h3>{part.name}</h3>
+      <p>{part.description}</p>
+      <div className="part-spec"><span />{part.spec}</div>
+    </div>)}
+  </aside>;
+}
+
 function Anatomy() {
   const [exploded, setExploded] = useState(false);
   const [selected, setSelected] = useState('controller');
-  const part = parts.find(p => p.id === selected) || parts[1];
   return <section className="anatomy" id="anatomy">
     <div className="section-shell">
       <div className="section-heading anatomy-heading" data-reveal="up"><div><Eyebrow number="02" light>ҚҰРЫЛЫМЫН ЗЕРТТЕҢІЗ</Eyebrow><h2>Сырты шағын.<br /><span>Іші — тұтас әлем.</span></h2></div><div className="section-heading-aside"><span className="orange-asterisk"><svg viewBox="0 0 64 64" width="58" height="58" fill="none" stroke="currentColor" strokeWidth="4"><path d="M32 3v58M3 32h58M11 11l42 42M11 53l42-42" /></svg></span><p>Бір құрылғы. Алты маңызды компонент.<br />Бөлшектеңіз. Айналдырыңыз. Әр бөлшектің<br className="desktop-break" /> артындағы идеяны ашыңыз.</p></div></div>
-      <div className={`lab-panel ${exploded ? 'is-exploded' : ''}`} data-reveal="up">
+      <div className={`lab-panel ${exploded ? 'is-exploded' : ''}`} data-reveal="up" data-reveal-once>
         <div className="lab-toolbar"><span className="lab-brand"><span className="tiny-square" />SSD.LAB / EXPLORER</span><span className="lab-toolbar-status"><span className="live-dot" />3D ИНТЕРАКТИВ</span></div>
         <div className="lab-workspace">
           <div className="lab-grid" />
           <span className="lab-corner top-left">+</span><span className="lab-corner top-right">+</span><span className="lab-corner bottom-left">+</span>
           <span className="lab-view-label">{exploded ? 'EXPLODED VIEW / 02' : 'ASSEMBLED VIEW / 01'}</span>
           <div className="lab-scene"><SSDScene exploded={exploded} activePart={exploded ? selected : null} onPartSelect={id => { if (id) setSelected(id); }} /></div>
-          <aside className="part-card" key={exploded ? selected : 'start'} aria-live="polite">
-            {exploded ? <><div className="part-card-top"><span className="part-number">{part.number}</span><Cpu size={20} /></div><span className="part-subtitle">{part.subtitle}</span><h3>{part.name}</h3><p>{part.description}</p><div className="part-spec"><span />{part.spec}</div></> : <><div className="part-card-top"><span className="part-number">M.2</span><ScanLine size={21} /></div><span className="part-subtitle">ЖАҚЫНЫРАҚ ТАНЫСАЙЫҚ</span><h3>Ішінде не бар?</h3><p>Құрылғыны бөлшектеу үшін төмендегі батырманы басыңыз. Кейін кез келген компонентке меңзерді апарып, оның міндетін біліңіз.</p><div className="part-card-hint"><MousePointer2 size={15} />Модельді сүйреп бұруға болады</div></>}
-          </aside>
+          <PartInfoCard activeId={exploded ? selected : 'assembled'} />
           <span className="lab-dimension">22 MM <span />80 MM</span>
           <div className="lab-floating-badge"><Layers3 size={13} />{exploded ? 'Әр бөлшектің өз рөлі бар' : 'Көрінгеннен де күрделірек'}</div>
         </div>
         <div className="lab-controls"><div className="lab-step"><span>{exploded ? '02' : '01'}</span> / 02<span className="lab-step-name">{exploded ? 'Бөлшектер әлемі' : 'Біртұтас құрылғы'}</span></div><div className="lab-buttons"><button className="button button-orange" onClick={() => setExploded(!exploded)}>{exploded ? 'Қайта жинау' : 'Бөлшектеу'}{exploded ? <RotateCcw size={18} /> : <MoveUpRight size={19} />}</button></div></div>
       </div>
-      <div className="parts-navigation" aria-label="SSD компоненттері">{parts.map(p => <button key={p.id} onClick={() => { setExploded(true); setSelected(p.id); }} className={exploded && p.id === selected ? 'active' : ''}><span>{p.number}</span>{p.name}<Plus size={13} /></button>)}</div>
+      <div className="parts-navigation" aria-label="SSD компоненттері">{parts.map(p => <button key={p.id} onClick={() => { setExploded(true); setSelected(p.id); }} className={exploded && p.id === selected ? 'active' : ''} aria-pressed={exploded && p.id === selected} aria-controls={`part-card-${p.id}`}><span>{p.number}</span>{p.name}<Plus size={13} /></button>)}</div>
       <p className="lab-disclaimer">Түсіндіруге арналған үлгі. Компоненттердің орналасуы SSD моделіне қарай өзгереді; жеке DRAM мен жылу таратқыш барлық үлгіде болмайды.</p>
     </div>
   </section>;

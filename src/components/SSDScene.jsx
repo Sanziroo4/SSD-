@@ -239,7 +239,7 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
     function part(id, base, target) {
       const group = new THREE.Group(); group.userData.partId = id;
       group.position.set(...base); root.add(group);
-      parts.push({ id, group, base: new THREE.Vector3(...base), target: new THREE.Vector3(...target) });
+      parts.push({ id, group, base: new THREE.Vector3(...base), target: new THREE.Vector3(...target), highlight: 0 });
       return group;
     }
     function screw(parent, x, y, z, radius = 0.075) {
@@ -368,8 +368,10 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
     let dragging = false;
     let dragTravel = 0;
     let hovered = null;
-    let width = 1;
-    let height = 1;
+    let pendingHover = null;
+    let hoverTimer = null;
+    let width = 0;
+    let height = 0;
     let frame = 0;
     let visible = true;
     let disposed = false;
@@ -383,10 +385,18 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
 
     function resize() {
       const rect = host.getBoundingClientRect();
-      width = Math.max(rect.width, 1); height = Math.max(rect.height, 1);
+      const nextWidth = Math.max(Math.round(rect.width), 1);
+      const nextHeight = Math.max(Math.round(rect.height), 1);
+      // setSize clears the WebGL buffer, even when its dimensions do not change.
+      // Ignore fractional layout notifications and redraw real resizes immediately.
+      if (nextWidth === width && nextHeight === height) return;
+      width = nextWidth; height = nextHeight;
       camera.aspect = width / height; camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      renderer.render(scene, camera);
     }
+    camera.position.copy(cameraDirection).multiplyScalar(cameraDistance);
+    camera.lookAt(0, 0, 0);
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host); resize();
     const visibilityObserver = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: '180px' });
@@ -411,6 +421,26 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
       canvas.style.cursor = next ? 'grab' : 'default';
       stateRef.current.onPartSelect?.(next);
     }
+    function cancelPendingHover() {
+      window.clearTimeout(hoverTimer);
+      hoverTimer = null;
+      pendingHover = null;
+    }
+    function queueHovered(next) {
+      if (next === hovered) {
+        cancelPendingHover();
+        return;
+      }
+      if (hoverTimer !== null && pendingHover === next) return;
+      cancelPendingHover();
+      pendingHover = next;
+      // Crossing a pin, label edge or small gap should not flash another card.
+      hoverTimer = window.setTimeout(() => {
+        hoverTimer = null;
+        pendingHover = null;
+        if (!dragging) selectHovered(next);
+      }, next ? 65 : 110);
+    }
     function onMove(event) {
       updatePointer(event);
       if (!stateRef.current.interactive) return;
@@ -421,12 +451,13 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
         dragRotation.x = clamp(dragRotation.x + dx * 0.004, -0.6, 0.6);
         dragRotation.y = clamp(dragRotation.y + dy * 0.002, -0.23, 0.23);
         dragStart.set(event.clientX, event.clientY);
-      } else selectHovered(getHit());
+      } else queueHovered(getHit());
     }
     function onDown(event) {
       if (!stateRef.current.interactive || event.button !== 0) return;
       updatePointer(event);
       if (!getHit()) return;
+      cancelPendingHover();
       dragging = true; dragTravel = 0;
       dragStart.set(event.clientX, event.clientY);
       canvas.style.cursor = 'grabbing';
@@ -435,18 +466,32 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
     function onUp(event) {
       if (!dragging) return;
       dragging = false;
+      updatePointer(event);
       canvas.style.cursor = hovered ? 'grab' : 'default';
-      if (dragTravel < 6) stateRef.current.onPartSelect?.(getHit());
+      if (dragTravel < 6) {
+        const hit = getHit();
+        hovered = hit;
+        canvas.style.cursor = hit ? 'grab' : 'default';
+        stateRef.current.onPartSelect?.(hit);
+      }
+      if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    }
+    function onCancel(event) {
+      cancelPendingHover();
+      dragging = false;
+      pointerTilt.set(0, 0);
+      canvas.style.cursor = hovered ? 'grab' : 'default';
       if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
     }
     function onLeave() {
       pointerTilt.set(0, 0);
+      cancelPendingHover();
       if (!dragging && stateRef.current.interactive) selectHovered(null);
     }
     canvas.addEventListener('pointermove', onMove);
     canvas.addEventListener('pointerdown', onDown);
     canvas.addEventListener('pointerup', onUp);
-    canvas.addEventListener('pointercancel', onUp);
+    canvas.addEventListener('pointercancel', onCancel);
     canvas.addEventListener('pointerleave', onLeave);
 
     function animate(now) {
@@ -472,6 +517,7 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
       root.rotation.z = reducedMotion ? -0.015 : -0.015 + Math.sin(t * 0.45) * 0.012;
       const focused = stateRef.current.activePart || hovered;
       parts.forEach((p, index) => {
+        p.highlight = THREE.MathUtils.lerp(p.highlight, focused === p.id ? 0.075 : 0, reducedMotion ? 1 : 1 - Math.exp(-delta * 10));
         p.group.position.lerpVectors(p.base, p.target, explodeProgress);
         if (!reducedMotion && explodeProgress > 0.01) p.group.position.y += Math.sin(t * 0.8 + index * 0.9) * 0.035 * explodeProgress;
         p.group.rotation.y = p.id === 'heatsink' ? -0.035 * explodeProgress : Math.sin(index * 2) * 0.035 * explodeProgress;
@@ -479,7 +525,7 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
           if (!object.isMesh || !object.material.emissive) return;
           // A restrained orange reflection identifies the inspected component.
           object.material.emissive.setHex(ORANGE);
-          object.material.emissiveIntensity = focused === p.id ? 0.075 : 0;
+          object.material.emissiveIntensity = p.highlight;
         });
       });
       // Shared materials must not carry selection from one component to another.
@@ -508,11 +554,12 @@ export default function SSDScene({ exploded = false, activePart = null, onPartSe
 
     return () => {
       disposed = true; cancelAnimationFrame(frame);
+      cancelPendingHover();
       resizeObserver.disconnect(); visibilityObserver.disconnect();
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('pointerdown', onDown);
       canvas.removeEventListener('pointerup', onUp);
-      canvas.removeEventListener('pointercancel', onUp);
+      canvas.removeEventListener('pointercancel', onCancel);
       canvas.removeEventListener('pointerleave', onLeave);
       geometries.forEach(g => g.dispose());
       materials.forEach(m => m.dispose());

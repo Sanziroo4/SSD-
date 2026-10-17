@@ -32,3 +32,7 @@
 .simulation-indicator.running .live-dot{animation:cellPulse .7s infinite}
 .knowledge-bars i:nth-child(even){transition-delay:.06s}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}[data-reveal]{opacity:1;transform:none}.hero-art{transform:none!important}}
+
+@media (prefers-reduced-motion: reduce) {
+  .part-card-panel { transition: none !important; }
+}

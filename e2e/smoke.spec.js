@@ -12,7 +12,7 @@ async function expectReadableText(page) {
   );
   expect(sizes.length).toBeGreaterThan(15);
   expect(sizes.filter(({ size }) => size < 16), 'Explanatory text must remain readable without zooming').toEqual([]);
-  await expect.poll(() => page.locator('.part-card > p').evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(15);
+  await expect.poll(() => page.locator('.part-card-panel.is-active > p').evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(15);
 }
 
 test('desktop navigation and SSD/HDD comparison', async ({ page }) => {
@@ -44,16 +44,16 @@ test('SSD explodes, all six components explain themselves, and reassembles', asy
   const names = ['Жылу таратқыш', 'Контроллер', 'NAND жад чиптері', 'DRAM буфері', 'Баспа платасы', 'M.2 жалғағышы'];
   for (const [index, name] of names.entries()) {
     await page.locator('.parts-navigation button').nth(index).click();
-    await expect(page.locator('.part-card h3')).toHaveText(name);
-    await expect(page.locator('.part-card .part-number')).toHaveText(String(index + 1).padStart(2, '0'));
+    await expect(page.locator('.part-card-panel.is-active h3')).toHaveText(name);
+    await expect(page.locator('.part-card-panel.is-active .part-number')).toHaveText(String(index + 1).padStart(2, '0'));
     await expect(page.locator('.parts-navigation button.active')).toHaveCount(1);
   }
   await toggle.click();
   await expect(page.locator('.lab-view-label')).toHaveText('ASSEMBLED VIEW / 01');
   await expect(toggle).toHaveAccessibleName('Бөлшектеу');
-  await expect(page.locator('.part-card h3')).toHaveText('Ішінде не бар?');
+  await expect(page.locator('.part-card-panel.is-active h3')).toHaveText('Ішінде не бар?');
   await page.locator('.parts-navigation button').nth(3).click();
-  await expect(page.locator('.part-card h3')).toHaveText('DRAM буфері');
+  await expect(page.locator('.part-card-panel.is-active h3')).toHaveText('DRAM буфері');
 });
 
 test('write/read simulation completes and changing the file resets it', async ({ page }) => {
@@ -109,7 +109,7 @@ for (const width of [320, 390]) test.describe(`mobile ${width}px`, () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expectReadableText(page);
     await page.locator('.parts-navigation button').nth(3).click();
-    await expect(page.locator('.part-card h3')).toHaveText('DRAM буфері');
+    await expect(page.locator('.part-card-panel.is-active h3')).toHaveText('DRAM буфері');
     const workspace = await page.locator('.lab-workspace').boundingBox();
     const card = await page.locator('.part-card').boundingBox();
     expect(card.x).toBeGreaterThanOrEqual(workspace.x);
