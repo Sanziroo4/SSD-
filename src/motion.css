@@ -1,0 +1,34 @@
+@keyframes riseIn{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardAppear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes cellPulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes hddSeek{from{transform:rotate(-22deg)}to{transform:rotate(-49deg)}}
+@keyframes packetMove{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:100%;opacity:0}}
+@keyframes packetMoveVertical{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+@keyframes programCell{from{background:#ccd9bd;color:#afbd9f;transform:scale(.85)}to{background:#ff7a42;color:#572908;transform:scale(1)}}
+@keyframes chargeFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
+@keyframes floatSoft{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes scrollArrow{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@keyframes componentFromRight{from{opacity:0;translate:200px -60px;rotate:35deg}to{opacity:1;translate:0 0;rotate:0deg}}
+@keyframes componentFromLeft{from{opacity:0;translate:-130px 60px;rotate:-40deg}to{opacity:1;translate:0 0;rotate:0deg}}
+.floating-component-nand{animation:componentFromRight 1.5s cubic-bezier(.16,1,.3,1) .2s both}
+.floating-component-controller{animation:componentFromLeft 1.6s cubic-bezier(.16,1,.3,1) .4s both}
+.floating-component-body{animation:floatSoft 5s ease-in-out infinite}
+.floating-component-controller .floating-component-body{animation-delay:-2s}
+[data-reveal]{opacity:0;transition:opacity .8s ease,transform 1s cubic-bezier(.16,1,.3,1);transform:translateY(35px)}
+[data-reveal="left"]{transform:translateX(-36px)}
+[data-reveal="right"]{transform:translateX(36px)}
+[data-reveal][data-visible="true"]{opacity:1;transform:translate(0,0)}
+.hero-copy{animation:riseIn 1s .08s both}
+.hero-product-tag{animation:riseIn 1s .3s both}
+.device-annotation{animation:riseIn 1s .6s both}
+.hero-outline-text{animation:riseIn 1.3s .05s both}
+.hero-art-caption{animation:riseIn .8s .5s both}
+.hero-note .note-line{animation:cellPulse 4s infinite}
+.scroll-cue-box svg{animation:scrollArrow 2s infinite}
+.illustrated-chip{animation:floatSoft 5s ease-in-out infinite}
+.orange-asterisk{animation:spin 35s linear infinite}
+.lab-toolbar .live-dot{animation:cellPulse 3s infinite}
+.simulation-indicator.running .live-dot{animation:cellPulse .7s infinite}
+.knowledge-bars i:nth-child(even){transition-delay:.06s}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}[data-reveal]{opacity:1;transform:none}.hero-art{transform:none!important}}
